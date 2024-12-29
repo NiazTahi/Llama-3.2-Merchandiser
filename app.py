@@ -4,7 +4,6 @@ from transformers import (
     AutoTokenizer,
 )
 
-@st.cache(allow_output_mutation=True)
 def invoke(input_text):
     instruction = """You are a top-rated merchandising agent. 
     Be polite to customers and answer all their questions.
