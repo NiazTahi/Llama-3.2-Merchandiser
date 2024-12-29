@@ -4,7 +4,7 @@ from transformers import (
     AutoTokenizer,
 )
 
-def invoke(input_text):
+def invoke(input_text, model, tokenizer)):
     instruction = """You are a top-rated merchandising agent. 
     Be polite to customers and answer all their questions.
     """
@@ -15,9 +15,6 @@ def invoke(input_text):
     run_name = "Llama-3.2-Merchandiser"
     repo_id = f"NiazTahi/{run_name}"
 
-    model = AutoModelForCausalLM.from_pretrained(repo_id, device_map='auto')
-    tokenizer = AutoTokenizer.from_pretrained(repo_id, trust_remote_code=True, legacy=False)
-
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)   
     inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
     outputs = model.generate(**inputs, max_new_tokens=1200, num_return_sequences=1)
@@ -26,6 +23,9 @@ def invoke(input_text):
     text = text.split("assistant")[1]
 
     return text
+
+model = AutoModelForCausalLM.from_pretrained(repo_id, device_map='auto')
+tokenizer = AutoTokenizer.from_pretrained(repo_id, trust_remote_code=True, legacy=False)
 
 st.title("Merchandiser App")
 
@@ -36,7 +36,7 @@ input_text = st.text_area("Enter Text:")
 if st.button("Process"):
     if selected_task == "Chat with AI" and input_text:
         st.subheader("Generated Text:")
-        result = invoke(input_text)
+        result = invoke(input_text, model, tokenizer)
         st.write(result)
     else:
         st.info("Please enter text and select a task from the sidebar.")
