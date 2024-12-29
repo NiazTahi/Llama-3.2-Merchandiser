@@ -10,10 +10,6 @@ def invoke(input_text, model, tokenizer):
     """
     messages = [{"role": "system", "content": instruction},
         {"role": "user", "content": input_text}]
-    
-    # HuggingFace repository ID
-    run_name = "Llama-3.2-Merchandiser"
-    repo_id = f"NiazTahi/{run_name}"
 
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)   
     inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True).to("cuda")
@@ -23,6 +19,10 @@ def invoke(input_text, model, tokenizer):
     text = text.split("assistant")[1]
 
     return text
+
+# HuggingFace repository ID
+run_name = "Llama-3.2-Merchandiser"
+repo_id = f"NiazTahi/{run_name}"
 
 model = AutoModelForCausalLM.from_pretrained(repo_id, device_map='auto')
 tokenizer = AutoTokenizer.from_pretrained(repo_id, trust_remote_code=True, legacy=False)
